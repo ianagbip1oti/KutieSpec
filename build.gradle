@@ -1,0 +1,25 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.2.41'
+    id 'org.jmailen.kotlinter' version '1.12.0'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.junit:junit-bom:5.2.0'
+  
+    compile 'io.github.microutils:kotlin-logging:1.5.4'
+    compile 'org.junit.platform:junit-platform-engine'
+    
+    testCompile 'org.slf4j:slf4j-simple:1.7.25'
+}
+
+test {
+    useJUnitPlatform()
+    
+    testLogging {
+        exceptionFormat 'full'
+    }
+}
