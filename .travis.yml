@@ -1,0 +1,22 @@
+language: java
+
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+
+stages:
+- build
+
+jobs:
+  include:
+    - stage: build
+      jdk: oraclejdk8
+      script: ./gradlew check
+    - jdk: oraclejdk9
+      script: ./gradlew check
+    - jdk: openjdk8
+      script: ./gradlew check
