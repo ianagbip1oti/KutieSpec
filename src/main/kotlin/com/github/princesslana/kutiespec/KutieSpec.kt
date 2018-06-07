@@ -1,6 +1,6 @@
 package com.github.princesslana.kutiespec
 
-open class KutieSpec(block: DescribeBlock.() -> Unit)
+open class KutieSpec(val block: DescribeBlock.() -> Unit)
 
 class DescribeBlock {
     fun describe(name: String, block: DescribeBlock.() -> Unit) {

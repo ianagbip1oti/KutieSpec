@@ -5,12 +5,14 @@ import mu.KLogging
 import org.junit.platform.engine.EngineDiscoveryRequest
 import org.junit.platform.engine.ExecutionRequest
 import org.junit.platform.engine.TestDescriptor
-import org.junit.platform.engine.TestEngine
 import org.junit.platform.engine.UniqueId
 import org.junit.platform.engine.support.descriptor.AbstractTestDescriptor
 import org.junit.platform.engine.support.descriptor.EngineDescriptor
+import org.junit.platform.engine.support.hierarchical.EngineExecutionContext
+import org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine
+import org.junit.platform.engine.support.hierarchical.Node
 
-class KutieSpecEngine : TestEngine {
+class KutieSpecEngine : HierarchicalTestEngine<KutieContext>() {
 
     companion object : KLogging()
 
@@ -34,15 +36,32 @@ class KutieSpecEngine : TestEngine {
         return engine
     }
 
-    override fun execute(executionRequest: ExecutionRequest) {
-        logger.info("executionRequest: $executionRequest")
+    override fun createExecutionContext(req: ExecutionRequest): KutieContext {
+        return KutieContext()
     }
 }
 
-class KutieSpecDescriptor(parentId: UniqueId, clz: Class<out KutieSpec>)
-    : AbstractTestDescriptor(parentId.append("spec", clz.getName()), clz.getSimpleName()) {
+class KutieSpecDescriptor(parentId: UniqueId, val clz: Class<out KutieSpec>)
+    : AbstractTestDescriptor(parentId.append("kutiespec", clz.getName()), clz.getSimpleName()), Node<KutieContext> {
+
+    companion object : KLogging()
 
     override fun getType(): TestDescriptor.Type {
         return TestDescriptor.Type.CONTAINER
     }
+
+    override fun mayRegisterTests(): Boolean {
+        return true
+    }
+
+    fun getSpec(): KutieSpec {
+        return clz.newInstance()
+    }
+
+    override fun execute(ctx: KutieContext, exec: Node.DynamicTestExecutor): KutieContext {
+        logger.info("Executing $clz...")
+        return ctx
+    }
 }
+
+class KutieContext : EngineExecutionContext
