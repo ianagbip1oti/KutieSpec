@@ -33,6 +33,6 @@ class KutieSpecEngine : TestEngine {
             .getChildren()
             .map { c -> c as KutieSpecDescriptor }
             .map { s -> s.example }
-            .forEach { e -> logger.info("Executing $e") }
+            .forEach { e -> execute(e, req.getEngineExecutionListener()) }
     }
 }
