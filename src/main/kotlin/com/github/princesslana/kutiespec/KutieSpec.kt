@@ -1,7 +1,7 @@
 package com.github.princesslana.kutiespec
 
 open class KutieSpec(val block: DescribeBlock.() -> Unit) {
-    internal fun toExample(): Example {
+    internal fun toExample(): Group {
         return DescribeBlock(this::class.simpleName ?: "").also(block).toExample()
     }
 }
@@ -17,7 +17,7 @@ class DescribeBlock(val name: String) {
         examples.add(Single(null, { -> block(ItBlock()) }))
     }
 
-    internal fun toExample(): Example {
+    internal fun toExample(): Group {
         return Group(name, examples)
     }
 }

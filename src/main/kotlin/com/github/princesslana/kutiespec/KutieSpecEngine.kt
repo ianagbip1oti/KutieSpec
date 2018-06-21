@@ -5,14 +5,10 @@ import mu.KLogging
 import org.junit.platform.engine.EngineDiscoveryRequest
 import org.junit.platform.engine.ExecutionRequest
 import org.junit.platform.engine.TestDescriptor
+import org.junit.platform.engine.TestEngine
 import org.junit.platform.engine.UniqueId
-import org.junit.platform.engine.support.descriptor.AbstractTestDescriptor
-import org.junit.platform.engine.support.descriptor.EngineDescriptor
-import org.junit.platform.engine.support.hierarchical.EngineExecutionContext
-import org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine
-import org.junit.platform.engine.support.hierarchical.Node
 
-class KutieSpecEngine : HierarchicalTestEngine<KutieContext>() {
+class KutieSpecEngine : TestEngine {
 
     companion object : KLogging()
 
@@ -21,8 +17,6 @@ class KutieSpecEngine : HierarchicalTestEngine<KutieContext>() {
     }
 
     override fun discover(discoveryRequest: EngineDiscoveryRequest, id: UniqueId): TestDescriptor {
-        val engine = EngineDescriptor(id, "KutieSpec")
-
         val specs = HashSet<Class<out KutieSpec>>()
 
         FastClasspathScanner()
@@ -31,37 +25,14 @@ class KutieSpecEngine : HierarchicalTestEngine<KutieContext>() {
 
         logger.info("Discovered ${specs.size} spec(s)")
 
-        specs.map { s -> KutieSpecDescriptor(id, s) }.forEach(engine::addChild)
-
-        return engine
+        return toDescriptor(id, specs)
     }
 
-    override fun createExecutionContext(req: ExecutionRequest): KutieContext {
-        return KutieContext()
-    }
-}
-
-class KutieSpecDescriptor(parentId: UniqueId, val clz: Class<out KutieSpec>)
-    : AbstractTestDescriptor(parentId.append("kutiespec", clz.getName()), clz.getSimpleName()), Node<KutieContext> {
-
-    companion object : KLogging()
-
-    override fun getType(): TestDescriptor.Type {
-        return TestDescriptor.Type.CONTAINER
-    }
-
-    override fun mayRegisterTests(): Boolean {
-        return true
-    }
-
-    fun getSpec(): KutieSpec {
-        return clz.newInstance()
-    }
-
-    override fun execute(ctx: KutieContext, exec: Node.DynamicTestExecutor): KutieContext {
-        logger.info("Executing $clz...")
-        return ctx
+    override fun execute(req: ExecutionRequest) {
+        req.getRootTestDescriptor()
+            .getChildren()
+            .map { c -> c as KutieSpecDescriptor }
+            .map { s -> s.example }
+            .forEach { e -> logger.info("Executing $e") }
     }
 }
-
-class KutieContext : EngineExecutionContext

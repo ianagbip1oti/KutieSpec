@@ -23,6 +23,9 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
     }
 }
 
+// Force execution of tests always
+test.outputs.upToDateWhen { false }
+
 test {
     useJUnitPlatform()
     
@@ -30,3 +33,4 @@ test {
         exceptionFormat 'full'
     }
 }
+
