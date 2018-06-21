@@ -1,5 +1,5 @@
 plugins {
-    id 'org.jetbrains.kotlin.jvm' version '1.2.41'
+    id 'org.jetbrains.kotlin.jvm' version '1.2.50'
     id 'org.jmailen.kotlinter' version '1.12.0'
 }
 
@@ -8,8 +8,8 @@ repositories {
 }
 
 dependencies {
+    compile 'org.jetbrains.kotlin:kotlin-reflect:1.2.50'
     compile 'org.junit:junit-bom:5.2.0'
-
     compile 'io.github.lukehutch:fast-classpath-scanner:2.21'
     compile 'io.github.microutils:kotlin-logging:1.5.4'
     compile 'org.junit.platform:junit-platform-engine'  
