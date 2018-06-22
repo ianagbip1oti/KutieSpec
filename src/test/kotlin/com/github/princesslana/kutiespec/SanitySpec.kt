@@ -4,6 +4,6 @@ import com.github.princesslana.kutiespec.KutieSpec
 
 class SanitySpec : KutieSpec ({
     describe("sanity") {
-        it { expect(true) to beTrue }
+        it("is sane") { expect(true) to beTrue }
     }
 })

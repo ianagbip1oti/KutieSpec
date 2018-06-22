@@ -9,15 +9,14 @@ fun toDescriptor(id: UniqueId, specs: Iterable<Class<out KutieSpec>>): TestDescr
     val engine = EngineDescriptor(id, "KutieSpec")
 
     specs.map { c -> c.newInstance() }
-        .map(KutieSpec::toExample)
-        .map { g -> KutieSpecDescriptor(id, g) }
+        .map { s -> KutieSpecDescriptor(id, s) }
         .forEach(engine::addChild)
 
     return engine
 }
 
-class KutieSpecDescriptor(parentId: UniqueId, val example: Group)
-    : AbstractTestDescriptor(parentId.append("kutiespec", example.name), example.name) {
+data class KutieSpecDescriptor(val parentId: UniqueId, val spec: KutieSpec)
+    : AbstractTestDescriptor(parentId.append("kutiespec", spec::class.qualifiedName), spec.name) {
 
     override fun getType(): TestDescriptor.Type {
         return TestDescriptor.Type.CONTAINER

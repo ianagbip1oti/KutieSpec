@@ -6,6 +6,7 @@ import org.junit.platform.engine.EngineDiscoveryRequest
 import org.junit.platform.engine.ExecutionRequest
 import org.junit.platform.engine.TestDescriptor
 import org.junit.platform.engine.TestEngine
+import org.junit.platform.engine.TestExecutionResult
 import org.junit.platform.engine.UniqueId
 
 class KutieSpecEngine : TestEngine {
@@ -29,10 +30,15 @@ class KutieSpecEngine : TestEngine {
     }
 
     override fun execute(req: ExecutionRequest) {
+        req.getEngineExecutionListener().executionStarted(req.getRootTestDescriptor())
+
         req.getRootTestDescriptor()
             .getChildren()
             .map { c -> c as KutieSpecDescriptor }
-            .map { s -> s.example }
-            .forEach { e -> execute(e, req.getEngineExecutionListener()) }
+            .map(KutieSpecDescriptor::spec)
+            .forEach { s -> s.execute(req.getRootTestDescriptor().getUniqueId(), req.getEngineExecutionListener()) }
+
+        req.getEngineExecutionListener()
+            .executionFinished(req.getRootTestDescriptor(), TestExecutionResult.successful())
     }
 }
